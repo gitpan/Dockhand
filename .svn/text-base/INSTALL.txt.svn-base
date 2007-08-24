@@ -1,0 +1,13 @@
+Installing Dockhand
+
+Dockhand is written in Perl so the first thing that you must do to run it is to install a version of the Perl Interpereter.  For windows we recommend ActivePerl from ActiveState, you can download the latest version from there site http://activestate.com.  Once you've downloaded the installation file run it, and follow the prompts until the installation is complete.  If you install it anywhere other that the default location take note of it because we will need it later.
+
+ActivePerl comes with a helpful utility for installing Perl modules called Perl Package Manager (PPM) you should be able to access it on Windows XP from Start > All Programs > ActiveState ActivePerl {Version} > Perl Package Manager.  Select it and wait for a console screen to appear once it does, you should see there PPM prompt it should look something like this: PPM>.  Once you have the prompt type install Text::CSV::Simple and hit the enter key and PPM will install this module and all its dependencies.
+
+Now you can upack the zip file to a convenient location.  And set two environment variables PERL_PATH, the path to the perl binaries, and DOCKHAND_PATH, the path to the dockhand code.  Once you've done this you should be all set.  
+
+If you have any questions, bugs, or complaints please feel free to contact me.
+
+Delon Newman
+Email: newmand4@southernct.edu
+Phone: 203.392.5983

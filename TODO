@@ -1,0 +1,11 @@
+- Change Data structure to an AoA with a seperate hash with column names for keys
+  and references to array columns.  This way we can have the AoA and HoA without
+  duplicating effort.  Also create a "tablespace" hash of tablenames for keys
+  and a pointers to HoAs.
+- Make a Reader for MDB files, using Win32::OLE investigate a cross platform option.
+- Make a Writer for CSV and TSV(one file per table), 
+- Make a Writer for ANSI SQL(CREATE TABLE and INSERT 
+  INTO statements)
+- Make a Reader and a Writer for ODBC
+- Make all data sets plural, multiple text files(tsv, csv), multiple spreadsheets, 
+  muiltiple tables (MDB, ODBC)

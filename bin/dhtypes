@@ -1,0 +1,53 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use Getopt::Long;
+use lib $ENV{'DOCKHAND_PATH'} . '/lib';
+use Dockhand::Types;
+use Dockhand::File::CSV;
+
+if ($^O =~ /MSWin32/i) { @ARGV = split / /, $ARGV[0] }
+
+my ($size_of, $sizes_of, $colstats, 
+	$type_of, $types_of, $fields);
+GetOptions('sizeof=s'  => \$size_of,
+		   'sizesof=s' => \$sizes_of,
+		   'typeof=s'  => \$type_of,
+		   'typesof=s' => \$types_of,
+		   'colstats=s'=> \$colstats );
+
+my ($file, $filetype) = @ARGV;
+$filetype = 'SQl' unless $filetype;
+
+die usage() unless @ARGV;
+my $data  = read_file($file);
+my $table = get_table($data);
+
+if ($size_of) {
+	print get_col_length($table->{$size_of}), "\n";
+} elsif ($sizes_of) {
+	foreach (@{$table->{$sizes_of}}) {
+		printf "%20s\t%d\n", $_, get_item_length($_);
+	}
+} elsif ($type_of) { 
+	print get_col_type($table->{$type_of}, $filetype, $type_of), "\n"; 
+} elsif ($types_of) {
+	foreach (@{$table->{$types_of}}) {
+		printf "%20s\t%20s\n", $_, get_item_type($_, $filetype);
+	}s
+} elsif ($colstats) {
+	my ($type, $num);
+	my %num_types = %{get_num_col_types($table->{$colstats}, $filetype)};
+	while ( ($type, $num) = each %num_types ) { 
+		printf "%20s:\t%d\n", $type, $num 
+	}
+} else { die usage() }
+
+sub usage {
+	return "usage: $0 [options] somefile.csv [SQL|CTL]\nOptions:\n" .
+	sprintf ("\t%30s\n", '--sizeof=[column name] returns column size') .
+	sprintf ("\t%30s\n", '--sizesof=[column name] returns size of each item') .
+	sprintf ("\t%30s\n", '--typeof=[column name] returns column type') .
+	sprintf ("\t%30s\n", '--typesof=[column name] returns type of each item');
+}

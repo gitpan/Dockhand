@@ -1,0 +1,72 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use Getopt::Long;
+use lib $ENV{'DOCKHAND_PATH'} . '/lib';
+use Dockhand::File;
+use Dockhand::File::CSV;
+use Dockhand::File::Excel;
+
+if ($^O =~ /MSWin32/i) { @ARGV = split / /, $ARGV[0] }
+
+my ($col, $row, $fields, $excel, $csv, $dump);
+GetOptions("col=s" => \$col,
+		   "row=i" => \$row,
+		   'fields'=> \$fields,
+		   'excel' => \$excel,
+		   'csv'   => \$csv,
+		   'dump'  => \$dump);
+		   
+die usage() unless @ARGV;
+
+# TODO: Implement some file detection
+my $data;
+if ($excel) {
+	$data = Dockhand::File::Excel::read_file($ARGV[0]);
+} elsif ($csv) {
+	$data = Dockhand::File::CSV::read_file($ARGV[0]);
+} else { print "Please type of input file\n"; die usage() }
+
+# FIXME: This needs to be cleaned up
+my $i = 0;
+my $table = get_table($data);
+if ($row && $col) {
+	foreach ( @{$table->{$col}} ) {
+		print "$_\n" if (($row-1) == $i);
+		++$i;
+	}
+} elsif ($col && !$row) {
+	$i = 1;
+	foreach ( @{$table->{$col}} ) {
+		printf "%4d:\t%10s\n", $i, $_;
+		++$i;
+	}
+} elsif ($row && !$col) {
+	my @fields = @{get_fields($data)};
+	foreach ( @{get_row($data, $row)} ) {
+		printf "%15s\t%20s\n", $fields[$i], $_;
+		++$i;
+	}
+} elsif ($fields) {
+	my @fields = keys %$table;
+	foreach (@fields) { printf "%20s\n", $_ }	
+	
+} else { die usage() }
+
+sub usage {
+	return "usage: " . get_filename($0) . " [options] somefile.csv\nOptions:\n" .
+	sprintf ("\t%30s\n", '--col=[column name] returns column') .
+	sprintf ("\t%30s\n", '--row=[row number] returns row') .
+	sprintf ("\t%27s\n", '--fields return field names') .
+	sprintf ("\t%8s\n", '--excel ') .
+	sprintf ("\t%6s\n", '--csv ') .
+	sprintf ("\n\t%30s\n", 'When both --col and --row are set') .
+	sprintf ("\t%30s\n", 'a single item is returned.');
+}
+
+sub get_filename {
+	my $path = shift;
+	my @path = split /\//, $path;
+	return pop @path;
+}

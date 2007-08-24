@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+<meta name="MSSmartTagsPreventParsing" content="true" />
+<meta name="author" content="Delon Newman delon.newman@gmail.com" />
+<meta name="Copyright" content="(c)2005" />
+<meta name="robots" content="all" />
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<title>Dockhand - README</title>
+<style type="text/css">
+	body
+	{
+		margin: 20px 80px 20px 80px;
+		font-family: Trebuchet MS, sans;
+		font-size: .9em;
+	}
+	#contact
+	{
+		border: solid #aaa 1px;
+		padding: 10px;
+		background: #eee;
+		margin: 20px 40px 0px 20px;
+	}
+</style>
+</head>
+
+<body>
+	<h1>Dockhand - Data Transport</h1>
+	<h2>1.0 About Dockhand</h2>
+
+	<p>Dockhand is a set of utility to be used with Oracle's SQL*Loader utility for loading large sets of data in CSV format into oracle tables.  It consists of three utilities: <code>dockhand</code>, <code>types</code> and <code>csv</code>.  We will describe what can be done with each of them.</p>
+
+
+	<h2>2.0 <code>dockhand</code></h2>
+
+	<p><code>dockhand</code> is the primary utility, it's designed to be simple to use for example if you need to generate control files and SQL <code>CREATE TABLE</code> statements for all the csv files in your directory simply type: <code>dockhand *.csv</code>, and your job is done.  If you need to generate only the contol files type: <code>dockhand --ctl *.csv</code>, or just the SQL: <code>dockhand --sql *.csv</code>.</p>
+
+
+	<h3>2.1 Overrides</h3>
+
+	<p>There's a whole lot going on in the background when you type these simple commands Dockhand automatically determines the datatype and size of each item and from that each field.  As a result of this complexity Dockhand has the ability to specify overrides, that is, data types the it gets wrong it allows you to specify.  It does this in the form of an INI style configuation file.  There's a sample in the samples directory of the package.</p>
+
+
+	<h2>3.0 <code>csv</code></h2>
+
+	<p>This utility is used for manipulating the source CSV files it allows you to view each row (<code>--row=[row number]</code>) by row number, each column (<code>--col=[column name]</code>) by column name, all the field names (<code>--fields</code>), and any individual item by specifying both the row and column.</p>
+
+	<code>
+		<pre>
+	Examples:
+	
+	csv --row=1
+	# returns first row not fields
+	# note that the list indicates the column name of each item to the left
+
+	csv --col=YR
+	# returns the the contents of the YR column
+	# note that the list specifies the row number of each item to the left
+
+	csv --row=1 --col=YR
+	# returns the first itme in the YR column
+		</pre>
+	</code>
+
+	<h2>4.0 <code>types</code></h2>
+
+	<p>This utility is used for determining the types of each item (<code>--typesof=[column name]</code>) by column name, the type of any column (<code>--typeof=[column name]</code>), the size of each item (<code>--sizesof=[column name]</code>) or the size of any column (<code>--sizeof=[column name]</code>).</p>
+
+
+	<div id="contact">
+		<p>If you have any questions, bugs, or complaints please feel free to contact me.</p>
+
+		<p>Delon Newman<br />
+		Email: newmand4@southernct.edu<br />
+		Phone: 203.392.5983</p>
+	</div>
+</body>
+</html>

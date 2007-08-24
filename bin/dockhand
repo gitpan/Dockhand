@@ -1,0 +1,84 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use lib $ENV{'DOCKHAND_PATH'} . '/lib';
+use Dockhand;
+use Dockhand::File::Config;
+use Dockhand::File::CSV;
+
+if ($^O =~ /MSWin32/i) { @ARGV = split / /, $ARGV[0] }
+
+use Getopt::Long;
+my ($sql, $ctl, $help, $config);
+GetOptions('sql'      => \$sql,
+           'ctl'      => \$ctl,
+	   'help'     => \$help,
+           'config=s' => \$config );
+
+usage() unless @ARGV;
+usage() if $help;
+chdir `pwd`;
+
+my $n = 0; my @path;
+my $num = int(@ARGV);
+#print "OS: $^O\n";
+print "Reading $num files...\n";
+foreach my $path (@ARGV) {
+	@path = split /\//, $path unless $^O =~ /Win32/i;
+	@path = split /\\/, $path if     $^O =~ /Win32/i;
+	
+	my $filename    = pop @path;
+	my ($tablename) = split /\./, $filename if ($filename);
+	
+	printf "\nReading %10s...", $filename;
+	my $data        = read_file($path);
+	my $table       = get_table($data);
+	print "\t\t[done]\n";
+
+	
+	unless ($config) {
+		$config = $ENV{'HOME'} . '/.csvrc'     unless $^O =~ /Win32/i;
+		$config = $ENV{'HOMEPATH'} . '/_csvrc' if     $^O =~ /Win32/i;
+	}
+	
+	unless ($sql || $ctl) { $sql = $ctl = 1 }
+	
+	if ($sql) { 
+		my $sqlout = $tablename . '.' . 'sql';
+		printf "\tMaking %10s...",  $sqlout;
+		make_table($table, 
+				   $tablename, 
+				   $sqlout, get_overrides($table, $config, 'SQL') );
+		print "\t[done]\n";
+	}	
+	if ($ctl) {
+		my $ctlout = $tablename . '.' . 'ctl';
+		printf "\tMaking %10s...", $ctlout;
+		make_control($table, 
+			         $tablename, 
+					 $ctlout, 
+					 $filename, 
+					 get_overrides($table, $config, 'CTL') );
+		print "\t[done]\n";
+	}
+	++$n;
+	print "\t$n of $num done.\n" if $n;
+}
+
+sub usage {
+	die <<EOF;
+Dockhand is a utility designed to be used with Oracle's SQL*Loader
+it takes in a CSV file and generates a create table statement or
+a control file.
+	
+usage: dockhand [options] somefile.csv
+Options:
+		--sql to make a sql file
+		--ctl to make a control file
+		--config=[config file] to specifiy overrides
+		--out=[file name]
+		--help displays this message
+EOF
+	
+}
